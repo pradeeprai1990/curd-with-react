@@ -4,12 +4,20 @@ const {  transporter } = require("../../../mailConfig");
 
 let studentInsert=async (req,res)=>{
     let {uname,email,phone}=req.body
+   
     let obj={
         uname,
         email,
         phone
     }
+
+    if(req.file){
+        if(req.file.filename){
+            obj['photo']= req.file.filename
+        }
+    }
     try{
+       
         let db=await dbConnection();
         let studentTable=await db.collection("student")
         let finalres=await studentTable.insertOne(obj)
@@ -79,6 +87,7 @@ let studentView=async (req,res)=>{
     let studentList=await studentTable.find().toArray();
     let obj={
         status:1,
+        path:'http://localhost:8000/uploads/student/',
         data:studentList
     }
     res.send(obj)
